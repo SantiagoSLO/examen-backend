@@ -14,8 +14,14 @@ class CategoriaDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ProductoListCreateView(generics.ListCreateAPIView):
-    queryset = Producto.objects.filter(disponible=True)
     serializer_class = ProductoSerializer
+
+    def get_queryset(self):
+        queryset = Producto.objects.filter(disponible=True)
+        categoria_id = self.request.query_params.get('categoria')
+        if categoria_id:
+            queryset = queryset.filter(categoria_id=categoria_id)
+        return queryset
 
 
 class ProductoDetailView(generics.RetrieveUpdateDestroyAPIView):
