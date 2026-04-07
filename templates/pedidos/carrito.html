@@ -1,0 +1,337 @@
+{% extends 'base.html' %}
+
+{% block title %}Carrito de Compras - Restaurante Sabor Colombiano{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1><i class="fas fa-shopping-cart me-2"></i>Tu Carrito</h1>
+    </div>
+</div>
+
+{% if items %}
+<div class="row">
+    <div class="col-md-8">
+        {% for item in items %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-2">
+                        {% if item.producto.imagen %}
+                        <img src="{{ item.producto.imagen.url }}" alt="{{ item.producto.nombre }}" class="img-fluid rounded">
+                        {% else %}
+                        <div class="img-placeholder rounded p-3 text-center">
+                            <i class="fas fa-utensils fa-2x text-white"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-4">
+                        <h5>{{ item.producto.nombre }}</h5>
+                        <p class="text-muted mb-0">${{ item.producto.precio }} c/u</p>
+                    </div>
+                    <div class="col-md-3">
+                        <form method="post" action="{% url 'actualizar_carrito' item.id %}" class="d-flex">
+                            {% csrf_token %}
+                            <input type="number" name="cantidad" value="{{ item.cantidad }}" min="1" class="form-control">
+                            <button type="submit" class="btn btn-outline-secondary ms-2">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </form>
+                    </div>
+                    <div class="col-md-2 text-end">
+                        <h5 class="text-primary">${{ item.subtotal }}</h5>
+                    </div>
+                    <div class="col-md-1 text-end">
+                        <form method="post" action="{% url 'eliminar_carrito' item.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        
+        {% if beneficios_canjeados %}
+        <div class="card mb-3 border-success">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-gift me-2"></i>Beneficios Canjeados</h5>
+            </div>
+            <div class="card-body">
+                {% for benef in beneficios_canjeados %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <strong>{{ benef.nombre }}</strong>
+                        <br><small class="text-muted">{{ benef.descripcion }}</small>
+                        {% if benef.producto_gratis %}
+                        <br><small class="text-success">{{ benef.cantidad_producto }}x {{ benef.producto_gratis.nombre }} (GRATIS)</small>
+                        {% endif %}
+                    </div>
+                    <div class="text-end">
+                        {% if benef.porcentaje %}
+                        <span class="badge bg-success">{{ benef.porcentaje }}% DESC</span>
+                        {% else %}
+                        <span class="badge bg-info">PRODUCTO EXTRA</span>
+                        {% endif %}
+                        <br><small class="text-muted">{{ benef.puntos_utilizados }} pts</small>
+                    </div>
+                </div>
+                {% if not forloop.last %}<hr>{% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Resumen del Pedido</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Subtotal:</span>
+                    <span>${{ subtotal }}</span>
+                </div>
+                
+                {% if beneficio_aplicado %}
+                <div class="d-flex justify-content-between mb-2 text-success">
+                    <span>Descuento Nivel ({{ beneficio_aplicado.porcentaje }}%):</span>
+                    <span>-${{ descuento }}</span>
+                </div>
+                {% endif %}
+                
+                {% if beneficios_cantidad.pedido_gratis %}
+                <div class="alert alert-success mb-2 py-2">
+                    <i class="fas fa-gift me-1"></i> {{ beneficios_cantidad.pedido_gratis }}
+                </div>
+                {% elif beneficios_cantidad.entrada_gratis %}
+                <div class="alert alert-success mb-2 py-2">
+                    <i class="fas fa-gift me-1"></i> {{ beneficios_cantidad.entrada_gratis }}
+                </div>
+                {% elif beneficios_cantidad.dos_entradas %}
+                <div class="alert alert-success mb-2 py-2">
+                    <i class="fas fa-gift me-1"></i> {{ beneficios_cantidad.dos_entradas }}
+                </div>
+                {% elif beneficios_cantidad.progreso %}
+                <div class="alert alert-secondary mb-2 py-2">
+                    <i class="fas fa-hourglass-half me-1"></i> {{ beneficios_cantidad.progreso }}
+                </div>
+                {% endif %}
+                
+                {% if descuento_cupon > 0 %}
+                <div class="d-flex justify-content-between mb-2 text-success">
+                    <span>Descuento Cupon:</span>
+                    <span>-${{ descuento_cupon }}</span>
+                </div>
+                {% endif %}
+                
+                {% if descuento_beneficios > 0 %}
+                <div class="d-flex justify-content-between mb-2 text-success">
+                    <span>Descuento Beneficios:</span>
+                    <span>-${{ descuento_beneficios }}</span>
+                </div>
+                {% endif %}
+                
+                {% if descuento_puntos > 0 %}
+                <div class="d-flex justify-content-between mb-2 text-success">
+                    <span>Descuento Puntos:</span>
+                    <span>-${{ descuento_puntos }}</span>
+                </div>
+                {% endif %}
+                
+                <!-- Campo para aplicar cupon -->
+                <div class="mb-3 mt-3">
+                    <label class="form-label"><i class="fas fa-tag me-2"></i>¿Tienes un cupon de descuento?</label>
+                    <form method="post" action="{% url 'aplicar_cupon' %}" class="d-flex">
+                        {% csrf_token %}
+                        <input type="text" name="codigo" class="form-control" placeholder="Ingresa tu cupon" required>
+                        <button type="submit" class="btn btn-outline-primary ms-2">Aplicar</button>
+                    </form>
+                </div>
+                
+                {% if cupon_aplicado %}
+                <div class="alert alert-success py-2">
+                    <small><i class="fas fa-check-circle me-1"></i> Cupon "{{ cupon_aplicado.codigo }}" aplicado</small>
+                </div>
+                {% endif %}
+                
+                {% if user.is_authenticated and puntos_disponibles > 0 %}
+                <div class="alert alert-info mb-3">
+                    <i class="fas fa-coins me-2"></i>
+                    <strong>Tienes {{ puntos_disponibles }} puntos</strong><br>
+                    <small>100 puntos = $1,000 de descuento</small>
+                    
+                    {% if puntos_aplicados > 0 %}
+                    <div class="alert alert-success mt-2 py-2">
+                        <i class="fas fa-check-circle me-1"></i>
+                        <strong>{{ puntos_aplicados }} puntos aplicados</strong><br>
+                        <small>Descuento: -${{ descuento_puntos }}</small>
+                    </div>
+                    <form method="post" action="{% url 'aplicar_puntos' %}">
+                        {% csrf_token %}
+                        <div class="input-group mt-2">
+                            <input type="number" name="puntos" class="form-control" min="0" max="{{ puntos_disponibles }}" value="0" placeholder="Cantidad de puntos">
+                            <button type="submit" class="btn btn-primary">Aplicar</button>
+                        </div>
+                    </form>
+                    {% else %}
+                    <form method="post" action="{% url 'aplicar_puntos' %}">
+                        {% csrf_token %}
+                        <div class="input-group mt-2">
+                            <input type="number" name="puntos" class="form-control" min="0" max="{{ puntos_disponibles }}" value="0" placeholder="Cantidad de puntos">
+                            <button type="submit" class="btn btn-primary">Aplicar Puntos</button>
+                        </div>
+                    </form>
+                    {% endif %}
+                </div>
+                {% endif %}
+                
+                <hr>
+                <div class="d-flex justify-content-between mb-3">
+                    <strong>Total:</strong>
+                    <strong class="text-primary">${{ total }}</strong>
+                </div>
+                
+                {% if user.is_authenticated %}
+                <form method="post" action="{% url 'crear_pedido' %}">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de Pedido</label>
+                        <select name="tipo_pedido" class="form-select" id="tipoPedido" onchange="toggleDomicilio()">
+                            <option value="S">En el Restaurante</option>
+                            <option value="D">Domicilio (+$3.000)</option>
+                        </select>
+                    </div>
+                    
+                    <div id="domicilioFields" style="display: none;">
+                        <div class="mb-3">
+                            <label class="form-label">Dirección de Entrega</label>
+                            <textarea name="direccion" class="form-control" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Teléfono de Contacto</label>
+                            <input type="text" name="telefono" class="form-control">
+                        </div>
+                        <!-- Mapa de selección de ubicación -->
+                        <div class="mb-3">
+                            <label class="form-label"><i class="fas fa-map-marker-alt me-2"></i>Selecciona tu ubicación en el mapa</label>
+                            <div id="map" style="height: 300px; width: 100%; border-radius: 8px; margin-bottom: 10px;"></div>
+                            <input type="hidden" name="latitud" id="latitud" value="">
+                            <input type="hidden" name="longitud" id="longitud" value="">
+                            <small class="text-muted">Haz clic en el mapa para seleccionar tu ubicación exacta</small>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Metodo de Pago</label>
+                        <select name="metodo_pago" class="form-select">
+                            <option value="EF">Efectivo</option>
+                            <option value="TC">Tarjeta de Credito/Debito</option>
+                            <option value="NE">Nequi</option>
+                            <option value="DA">Daviplata</option>
+                            <option value="TR">Transferencia</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-check me-2"></i>Confirmar Pedido
+                    </button>
+                </form>
+                {% else %}
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <a href="{% url 'login' %}">Inicia sesion</a> para completar tu pedido.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="row">
+    <div class="col-12 text-center py-5">
+        <i class="fas fa-shopping-cart fa-5x text-muted mb-4"></i>
+        <h3>Tu carrito esta vacio</h3>
+        <p class="text-muted">Explora nuestra carta y agrega tus productos favoritos</p>
+        <a href="{% url 'carta' %}" class="btn btn-primary">
+            <i class="fas fa-book-open me-2"></i>Ver Carta
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<script>
+function toggleDomicilio() {
+    var tipo = document.getElementById('tipoPedido').value;
+    var fields = document.getElementById('domicilioFields');
+    if (tipo === 'D') {
+        fields.style.display = 'block';
+    } else {
+        fields.style.display = 'none';
+    }
+}
+</script>
+
+<!-- Leaflet CSS y JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+// Inicializar el mapa cuando se muestre el formulario de domicilio
+document.getElementById('tipoPedido').addEventListener('change', function() {
+    if (this.value === 'D' && !window.mapInitialized) {
+        initMap();
+    }
+});
+
+function initMap() {
+    // Coordenadas por defecto (Bogotá, Colombia)
+    var defaultLat = 4.7110;
+    var defaultLng = -74.0721;
+    
+    // Verificar si el usuario tiene una dirección guardada
+    var savedLat = '{{ perfil.direccion_latitud|default:"" }}';
+    var savedLng = '{{ perfil.direccion_longitud|default:"" }}';
+    
+    var lat = savedLat ? parseFloat(savedLat) : defaultLat;
+    var lng = savedLng ? parseFloat(savedLng) : defaultLng;
+    
+    // Inicializar el mapa
+    var map = L.map('map').setView([lat, lng], 13);
+    
+    // Agregar tiles de OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+    
+    // Marker arrastrable
+    var marker = L.marker([lat, lng], {draggable: true}).addTo(map);
+    
+    // Actualizar campos hidden al mover el marker
+    marker.on('dragend', function(event) {
+        var position = marker.getLatLng();
+        document.getElementById('latitud').value = position.lat.toFixed(6);
+        document.getElementById('longitud').value = position.lng.toFixed(6);
+    });
+    
+    // Permitir hacer clic en el mapa para mover el marker
+    map.on('click', function(e) {
+        marker.setLatLng(e.latlng);
+        document.getElementById('latitud').value = e.latlng.lat.toFixed(6);
+        document.getElementById('longitud').value = e.latlng.lng.toFixed(6);
+    });
+    
+    // Inicializar campos con valores guardados
+    if (savedLat && savedLng) {
+        document.getElementById('latitud').value = lat;
+        document.getElementById('longitud').value = lng;
+    }
+    
+    window.mapInitialized = true;
+}
+</script>
+{% endblock %}

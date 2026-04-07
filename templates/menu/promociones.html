@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}Promociones - Restaurante Sabor Colombiano{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1><i class="fas fa-tags me-2 text-danger"></i>Promociones Activas</h1>
+        <p class="text-muted">Aprovecha nuestras ofertas especiales</p>
+    </div>
+</div>
+
+{% if promociones or cupones %}
+{% if promociones %}
+<div class="row">
+    {% for promo in promociones %}
+    <div class="col-md-6 mb-4">
+        <div class="card h-100 border-danger">
+            {% if promo.imagen %}
+            <img src="{{ promo.imagen.url }}" class="card-img-top" alt="{{ promo.titulo }}" style="height: 250px; object-fit: cover;">
+            {% else %}
+            <div class="img-placeholder" style="height: 200px;">
+                <i class="fas fa-tags fa-4x text-white"></i>
+            </div>
+            {% endif %}
+            <div class="card-body">
+                <span class="badge bg-danger fs-6 mb-2">{{ promo.porcentaje }}% DE DESCUENTO</span>
+                <h3 class="card-title">{{ promo.titulo }}</h3>
+                <p class="card-text">{{ promo.descripcion }}</p>
+                
+                {% if promo.productos.all %}
+                <h6>Productos en promoción:</h6>
+                <ul>
+                    {% for producto in promo.productos.all %}
+                    <li>{{ producto.nombre }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                
+                {% if promo.codigo %}
+                <div class="alert alert-info">
+                    <strong>Código:</strong> {{ promo.codigo }}
+                </div>
+                {% endif %}
+            </div>
+            <div class="card-footer bg-white">
+                <p class="text-muted mb-0">
+                    <i class="fas fa-clock me-1"></i>
+                    Válido hasta: {{ promo.fecha_fin|date:"d/m/Y" }}
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if cupones %}
+<div class="row mt-4">
+    <div class="col-12">
+        <h2 class="mb-3"><i class="fas fa-ticket-alt me-2 text-success"></i>Cupones de Descuento</h2>
+        <p class="text-muted">¡Usa estos cupones en tu próximo pedido!</p>
+    </div>
+    {% for cupon in cupones %}
+    <div class="col-md-6 mb-4">
+        <div class="card h-100 border-success">
+            <div class="card-body">
+                {% if cupon.tipo == 'P' %}
+                <span class="badge bg-success fs-6 mb-2">{{ cupon.valor }}% DE DESCUENTO</span>
+                {% else %}
+                <span class="badge bg-success fs-6 mb-2">${{ cupon.valor|stringformat:'.0f' }} DE DESCUENTO</span>
+                {% endif %}
+                <h3 class="card-title">{{ cupon.codigo }}</h3>
+                <p class="card-text">{{ cupon.descripcion }}</p>
+                
+                {% if cupon.valor_minimo > 0 %}
+                <p class="text-muted mb-1">
+                    <i class="fas fa-shopping-cart me-1"></i>
+                    Pedido mínimo: ${{ cupon.valor_minimo|stringformat:'.0f' }}
+                </p>
+                {% endif %}
+                
+                {% if cupon.fecha_fin %}
+                <p class="text-muted mb-0">
+                    <i class="fas fa-clock me-1"></i>
+                    Válido hasta: {{ cupon.fecha_fin|date:"d/m/Y" }}
+                </p>
+                {% endif %}
+                
+                <div class="alert alert-secondary mt-3 mb-0">
+                    <strong>Código:</strong> <code class="fs-5">{{ cupon.codigo }}</code>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% elif request.user.is_authenticated %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            Ya has usado todos los cupones disponibles. ¡Vuelve pronto para nuevas ofertas!
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% else %}
+<div class="row">
+    <div class="col-12 text-center py-5">
+        <i class="fas fa-tags fa-5x text-muted mb-4"></i>
+        <h3>No hay promociones disponibles</h3>
+        <p class="text-muted">Vuelve pronto para ver nuevas ofertas</p>
+        <a href="{% url 'carta' %}" class="btn btn-primary">
+            <i class="fas fa-book-open me-2"></i>Ver Carta
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

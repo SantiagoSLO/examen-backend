@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Admin - Restaurante Sabor Colombiano{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1><i class="fas fa-tachometer-alt me-2"></i>Panel de Administración</h1>
+        <p class="text-muted">Bienvenido, {{ request.user.username }}</p>
+    </div>
+</div>
+
+<!-- Estadísticas Generales -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-shopping-cart me-2"></i>Pedidos Hoy</h5>
+                <h2>{{ pedidos_hoy.count }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-check-circle me-2"></i>Pedidos Semana</h5>
+                <h2>{{ pedidos_semana.count }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-users me-2"></i>Total Pedidos</h5>
+                <h2>{{ total_pedidos }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-dollar-sign me-2"></i>Ingresos Totales</h5>
+                <h2>${{ ingresos_totales|floatformat:0 }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Estado de Pedidos de Hoy -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Estado de Pedidos de Hoy</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col">
+                        <span class="badge bg-secondary fs-6">{{ pedidos_pendientes }} Pendientes</span>
+                    </div>
+                    <div class="col">
+                        <span class="badge bg-primary fs-6">{{ pedidos_confirmados }} Confirmados</span>
+                    </div>
+                    <div class="col">
+                        <span class="badge bg-warning fs-6">{{ pedidos_en_preparacion }} En Preparación</span>
+                    </div>
+                    <div class="col">
+                        <span class="badge bg-info fs-6">{{ pedidos_listos }} Listos</span>
+                    </div>
+                    <div class="col">
+                        <span class="badge bg-success fs-6">{{ pedidos_entregados }} Entregados</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Productos Más Vendidos y Clientes Frecuentes -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0"><i class="fas fa-fire me-2"></i>Productos Más Vendidos</h5>
+            </div>
+            <div class="card-body">
+                {% if productos_mas_vendidos %}
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cantidad Vendida</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for producto in productos_mas_vendidos %}
+                        <tr>
+                            <td>{{ producto.producto__nombre }}</td>
+                            <td><span class="badge bg-danger">{{ producto.total_vendido }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="text-muted">No hay datos suficientes</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-star me-2"></i>Clientes Frecuentes</h5>
+            </div>
+            <div class="card-body">
+                {% if clientes_frecuentes %}
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Pedidos</th>
+                            <th>Gasto Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cliente in clientes_frecuentes %}
+                        <tr>
+                            <td>{{ cliente.usuario.username }}</td>
+                            <td><span class="badge bg-success">{{ cliente.total_pedidos }}</span></td>
+                            <td>${{ cliente.gasto_total|floatformat:0 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="text-muted">No hay clientes frecuentes</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pedidos Recientes -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-list me-2"></i>Pedidos de Hoy</h5>
+            </div>
+            <div class="card-body">
+                {% if pedidos_hoy %}
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Cliente</th>
+                            <th>Tipo</th>
+                            <th>Estado</th>
+                            <th>Total</th>
+                            <th>Hora</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pedido in pedidos_hoy %}
+                        <tr>
+                            <td>{{ pedido.numero_pedido }}</td>
+                            <td>{{ pedido.cliente.username }}</td>
+                            <td>
+                                {% if pedido.tipo_pedido == 'D' %}
+                                <span class="badge bg-info">Domicilio</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Restaurante</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if pedido.estado == 'P' %}
+                                <span class="badge bg-secondary">Pendiente</span>
+                                {% elif pedido.estado == 'C' %}
+                                <span class="badge bg-primary">Confirmado</span>
+                                {% elif pedido.estado == 'E' %}
+                                <span class="badge bg-warning">En Preparación</span>
+                                {% elif pedido.estado == 'R' %}
+                                <span class="badge bg-info">Listo</span>
+                                {% elif pedido.estado == 'F' %}
+                                <span-success">Entregado</span>
+                                class="badge bg {% elif pedido.estado == 'X' %}
+                                <span class="badge bg-danger">Cancelado</span>
+                                {% endif %}
+                            </td>
+                            <td>${{ pedido.total|floatformat:0 }}</td>
+                            <td>{{ pedido.fecha_pedido|time:"H:i" }}</td>
+                            <td>
+                                <a href="{% url 'detalle_pedido' pedido.id %}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="/admin/pedidos/pedido/{{ pedido.id }}/change/" class="btn btn-sm btn-warning">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="text-muted text-center py-4">No hay pedidos hoy</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Links Rápidos -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="fas fa-link me-2"></i>Accesos Rápidos</h5>
+            </div>
+            <div class="card-body text-center">
+                <a href="/admin/" class="btn btn-primary me-2">
+                    <i class="fas fa-cog me-1"></i>Admin Django
+                </a>
+                <a href="/admin/pedidos/pedido/add/" class="btn btn-success me-2">
+                    <i class="fas fa-plus me-1"></i>Nuevo Pedido
+                </a>
+                <a href="/admin/menu/producto/add/" class="btn btn-info me-2">
+                    <i class="fas fa-utensils me-1"></i>Nuevo Producto
+                </a>
+                <a href="/admin/fidelizacion/cupon/add/" class="btn btn-warning me-2">
+                    <i class="fas fa-tag me-1"></i>Nuevo Cupón
+                </a>
+                <a href="{% url 'carta' %}" class="btn btn-secondary">
+                    <i class="fas fa-book me-1"></i>Ver Carta
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

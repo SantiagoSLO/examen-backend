@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio - Restaurante Sabor Colombiano{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="row">
+    <div class="col-12">
+        <div class="hero-section animate-fade-in">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="display-4 fw-bold">Bienvenido a Sabor Colombiano</h1>
+                    <p class="lead">Disfruta de los auténticos sabores de nuestra tierra. Desde platos típicos hasta creaciones gourmet, tenemos algo para todos los gustos.</p>
+                    <a href="{% url 'carta' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-book-open me-2"></i>Ver Nuestra Carta
+                    </a>
+                </div>
+                <div class="col-md-4 text-end">
+                    <i class="fas fa-utensils fa-8x animate-float" style="opacity: 0.3;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sección de Bienvenida para Usuarios Autenticados -->
+{% if user.is_authenticated %}
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm animate-fade-in">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h4>¡Hola, {{ user.first_name|default:user.username }}!</h4>
+                        <p class="mb-0">
+                            <span class="badge bg-warning text-dark">
+                                <i class="fas fa-star me-1"></i>Nivel {{ perfil.nivel_fidelidad }}
+                            </span>
+                            <span class="ms-2 puntos-badge">
+                                <i class="fas fa-coins me-1"></i>{{ perfil.puntos_fidelidad }} puntos
+                            </span>
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <a href="{% url 'mis_beneficios' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-gift me-1"></i>Mis Beneficios
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Menú del Día -->
+<div class="row mb-5">
+    <div class="col-12">
+        <h2 class="mb-4"><i class="fas fa-calendar-day me-2" style="color: var(--pastel-coral);"></i>Menú del Día</h2>
+        <div class="alert alert-info">
+            <a href="{% url 'menu_del_dia' %}" class="alert-link">Ver el menú de hoy con precio especial</a>
+        </div>
+    </div>
+</div>
+
+<!-- Promociones -->
+{% if promociones %}
+<div class="row mb-5">
+    <div class="col-12">
+        <h2 class="mb-4"><i class="fas fa-tags me-2 text-danger"></i>Promociones Activas</h2>
+        <div class="row">
+            {% for promo in promociones %}
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    {% if promo.imagen %}
+                    <img src="{{ promo.imagen.url }}" class="card-img-top" alt="{{ promo.titulo }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                    <div class="img-placeholder" style="height: 200px;">
+                        <i class="fas fa-tags fa-3x text-white"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ promo.titulo }}</h5>
+                        <p class="card-text">{{ promo.descripcion }}</p>
+                        <span class="badge bg-danger">{{ promo.porcentaje }}% DESC</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Categorías -->
+<div class="row mb-5">
+    <div class="col-12">
+        <h2 class="mb-4"><i class="fas fa-utensils me-2" style="color: var(--pastel-coral);"></i>Nuestra Carta</h2>
+        <div class="row">
+            {% for categoria in categorias %}
+            <div class="col-md-3 col-sm-6 mb-3">
+                <a href="{% url 'categoria_detail' categoria.pk %}" class="text-decoration-none">
+                    <div class="card h-100 text-center card-producto">
+                        {% if categoria.imagen %}
+                        <img src="{{ categoria.imagen.url }}" class="card-img-top" alt="{{ categoria.nombre }}" style="height: 150px; object-fit: cover;">
+                        {% else %}
+                        <div class="img-placeholder" style="height: 150px;">
+                            <i class="fas fa-utensils fa-2x text-white"></i>
+                        </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title" style="color: var(--dark-text);">{{ categoria.nombre }}</h5>
+                            <p class="text-muted small">{{ categoria.get_productos_count }} productos</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>No hay categorías disponibles aún.
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'carta' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-book-open me-2"></i>Ver Carta Completa
+            </a>
+            <a href="{% url 'descargar_carta_pdf' %}" class="btn btn-outline-secondary btn-lg ms-2">
+                <i class="fas fa-file-pdf me-2"></i>Descargar Carta PDF
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Beneficios de Fidelización -->
+<div class="row mb-5">
+    <div class="col-12">
+        <h2 class="mb-4"><i class="fas fa-star me-2" style="color: #FFD700;"></i>Programa de Fidelización</h2>
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-coins fa-3x mb-3" style="color: var(--pastel-peach);"></i>
+                        <h5>Gana Puntos</h5>
+                        <p class="text-muted">Por cada pedido realizado, ganas puntos que puedes canjear por beneficios exclusivos.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-trophy fa-3x mb-3" style="color: var(--pastel-coral);"></i>
+                        <h5>Sube de Nivel</h5>
+                        <p class="text-muted">Acumula puntos para desbloquear nuevos niveles y obtener mejores beneficios.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-gift fa-3x mb-3" style="color: var(--pastel-mint);"></i>
+                        <h5>Beneficios Exclusivos</h5>
+                        <p class="text-muted">Descuentos, productos gratis y acceso a eventos exclusivos te esperan.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-3">
+            <a href="{% url 'programa_fidelidad' %}" class="btn btn-warning">
+                <i class="fas fa-star me-2"></i>Conoce el Programa
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Cómo Funciona -->
+<div class="row mb-5">
+    <div class="col-12">
+        <h2 class="mb-4"><i class="fas fa-question-circle me-2" style="color: var(--pastel-coral);"></i>¿Cómo hacer un pedido?</h2>
+        <div class="row text-center">
+            <div class="col-md-3">
+                <div class="step">1</div>
+                <h5>Elige tus productos</h5>
+                <p class="text-muted">Explora nuestra carta y agrega lo que quieras</p>
+            </div>
+            <div class="col-md-3">
+                <div class="step">2</div>
+                <h5>Carrito de compras</h5>
+                <p class="text-muted">Revisa tu pedido y aplica beneficios</p>
+            </div>
+            <div class="col-md-3">
+                <div class="step">3</div>
+                <h5>Elige entrega</h5>
+                <p class="text-muted">En restaurante o a domicilio</p>
+            </div>
+            <div class="col-md-3">
+                <div class="step">4</div>
+                <h5>¡Recibe tu pedido!</h5>
+                <p class="text-muted">Y gana puntos de fidelidad</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

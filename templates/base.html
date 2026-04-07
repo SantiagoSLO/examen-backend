@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Restaurante Sabor Colombiano{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --pastel-coral: #FFB5A7;
+            --pastel-salmon: #FCD5CE;
+            --pastel-cream: #FEF1E6;
+            --pastel-mint: #B8E0D2;
+            --pastel-lavender: #D6C7E0;
+            --pastel-peach: #FFDAB9;
+            --pastel-sky: #A8DADC;
+            --dark-text: #4A4A4A;
+            --soft-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        
+        * {
+            font-family: 'Nunito', sans-serif;
+        }
+        
+        body {
+            background-color: var(--pastel-cream);
+            color: var(--dark-text);
+        }
+        
+        /* Navbar con gradiente suave */
+        .navbar {
+            background: linear-gradient(135deg, var(--pastel-coral) 0%, var(--pastel-salmon) 100%);
+            box-shadow: var(--soft-shadow);
+            padding: 15px 0;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .navbar-brand:hover {
+            transform: scale(1.05);
+        }
+        
+        .nav-link {
+            transition: all 0.3s ease;
+            border-radius: 20px;
+            padding: 8px 15px !important;
+            margin: 0 5px;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        
+        /* Cards con sombras suaves */
+        .card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: var(--soft-shadow);
+            transition: all 0.4s ease;
+            background: white;
+        }
+        
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+        }
+        
+        /* Botones con gradientes pastel */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--pastel-coral) 0%, #FF8A7A 100%);
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #FF8A7A 0%, var(--pastel-coral) 100%);
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(255, 181, 167, 0.5);
+        }
+        
+        .btn-outline-primary {
+            border: 2px solid var(--pastel-coral);
+            color: var(--pastel-coral);
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline-primary:hover {
+            background: var(--pastel-coral);
+            color: white;
+        }
+        
+        /* Badges suaves */
+        .badge.bg-primary {
+            background: var(--pastel-lavender) !important;
+            color: var(--dark-text);
+        }
+        
+        .badge.bg-warning {
+            background: var(--pastel-peach) !important;
+            color: var(--dark-text);
+        }
+        
+        .badge.bg-success {
+            background: var(--pastel-mint) !important;
+            color: var(--dark-text);
+        }
+        
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, var(--pastel-sky) 0%, var(--pastel-mint) 100%);
+            padding: 40px 0;
+            margin-top: 60px;
+        }
+        
+        /* Animaciones */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes pulse-soft {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        .animate-fade-in {
+            animation: fadeInUp 0.8s ease forwards;
+        }
+        
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--pastel-salmon) 0%, var(--pastel-cream) 50%, var(--pastel-mint) 100%);
+            border-radius: 30px;
+            padding: 60px;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+            animation: pulse-soft 4s ease-in-out infinite;
+        }
+        
+        /* Producto cards */
+        .card-producto {
+            overflow: hidden;
+        }
+        
+        .card-producto img {
+            transition: transform 0.5s ease;
+        }
+        
+        .card-producto:hover img {
+            transform: scale(1.1);
+        }
+        
+        /* Puntos badge */
+        .puntos-badge {
+            background: linear-gradient(135deg, var(--pastel-peach) 0%, var(--pastel-coral) 100%);
+            color: var(--dark-text);
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            display: inline-block;
+        }
+        
+        /* Alerts */
+        .alert {
+            border: none;
+            border-radius: 15px;
+        }
+        
+        .alert-success {
+            background-color: var(--pastel-mint);
+        }
+        
+        .alert-warning {
+            background-color: var(--pastel-peach);
+        }
+        
+        /* Formularios */
+        .form-control {
+            border-radius: 15px;
+            border: 2px solid var(--pastel-salmon);
+            padding: 12px 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: var(--pastel-coral);
+            box-shadow: 0 0 0 4px rgba(255, 181, 167, 0.2);
+        }
+        
+        /* Dropdown */
+        .dropdown-menu {
+            border: none;
+            border-radius: 15px;
+            box-shadow: var(--soft-shadow);
+        }
+        
+        .dropdown-item {
+            border-radius: 10px;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown-item:hover {
+            background-color: var(--pastel-cream);
+        }
+        
+        /* Section titles */
+        h1, h2, h3 {
+            color: var(--dark-text);
+            font-weight: 700;
+        }
+        
+        /* Step circle */
+        .step-circle {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--pastel-coral) 0%, var(--pastel-peach) 100%);
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            box-shadow: 0 5px 20px rgba(255, 181, 167, 0.4);
+        }
+        
+        /* Imagen placeholder */
+        .img-placeholder {
+            background: linear-gradient(135deg, var(--pastel-salmon) 0%, var(--pastel-mint) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navegación -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'inicio' %}">
+                <i class="fas fa-utensils me-2"></i>Sabor Colombiano
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'carta' %}">
+                            <i class="fas fa-book-open me-1"></i> Nuestra Carta
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'promociones' %}">
+                            <i class="fas fa-tags me-1"></i> Promociones
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'menu_del_dia' %}">
+                            <i class="fas fa-calendar-day me-1"></i> Menú del Día
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'programa_fidelidad' %}">
+                            <i class="fas fa-star me-1"></i> Programa de Fidelidad
+                        </a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'carrito' %}">
+                                <i class="fas fa-shopping-cart me-1"></i> Carrito
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user me-1"></i> {{ user.username }}
+                                <span class="badge bg-warning text-dark ms-1">{{ user.perfil.puntos_fidelidad }} pts</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'perfil' %}">Mi Perfil</a></li>
+                                <li><a class="dropdown-item" href="{% url 'mis_pedidos' %}">Mis Pedidos</a></li>
+                                <li><a class="dropdown-item" href="{% url 'mis_beneficios' %}">Mis Beneficios</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">Cerrar Sesión</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">
+                                <i class="fas fa-sign-in-alt me-1"></i> Iniciar Sesión
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'registro' %}">
+                                <i class="fas fa-user-plus me-1"></i> Registrarse
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Restaurante Sabor Colombiano</h5>
+                    <p>Sabores auténticos de Colombia en cada plato.</p>
+                    <p><i class="fas fa-phone me-2"></i> (123) 456-7890</p>
+                    <p><i class="fas fa-map-marker-alt me-2"></i> Calle Principal #123</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Horario de Atención</h5>
+                    <p>Lunes a Domingo:</p>
+                    <p>11:00 AM - 10:00 PM</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Síguenos</h5>
+                    <a href="#" class="text-white me-2"><i class="fab fa-facebook fa-lg"></i></a>
+                    <a href="#" class="text-white me-2"><i class="fab fa-instagram fa-lg"></i></a>
+                    <a href="#" class="text-white"><i class="fab fa-twitter fa-lg"></i></a>
+                </div>
+            </div>
+            <hr style="border-color: rgba(255,255,255,0.3);">
+            <p class="text-center mb-0">&copy; 2024 Restaurante Sabor Colombiano. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

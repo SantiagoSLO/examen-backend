@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ producto.nombre }} - Restaurante Sabor Colombiano{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <a href="{% url 'carta' %}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-2"></i>Volver a la Carta
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        {% if producto.imagen %}
+        <img src="{{ producto.imagen.url }}" class="img-fluid rounded" alt="{{ producto.nombre }}">
+        {% else %}
+        <div class="img-placeholder rounded" style="height: 400px;">
+            <i class="fas fa-utensils fa-5x text-white"></i>
+        </div>
+        {% endif %}
+    </div>
+    <div class="col-md-6">
+        <h1>{{ producto.nombre }}</h1>
+        <p class="text-muted">{{ producto.descripcion }}</p>
+        
+        <!-- Etiquetas -->
+        <div class="mb-3">
+            {% if producto.vegetariano %}
+            <span class="badge bg-success">Vegetariano</span>
+            {% endif %}
+            {% if producto.vegano %}
+            <span class="badge bg-success">Vegano</span>
+            {% endif %}
+            {% if producto.gluten_free %}
+            <span class="badge bg-info">Sin Gluten</span>
+            {% endif %}
+            {% if producto.picantes > 0 %}
+            <span class="badge bg-warning">
+                {% for i in "x"|rjust:producto.picantes %}🔥{% endfor %}
+            </span>
+            {% endif %}
+        </div>
+        
+        <!-- Precio -->
+        <div class="mb-3">
+            {% if producto.get_precio_con_descuento < producto.precio %}
+            <span class="text-decoration-line-through text-muted h4">${{ producto.precio }}</span>
+            <span class="text-danger h3">${{ producto.get_precio_con_descuento }}</span>
+            {% else %}
+            <span class="text-primary h3">${{ producto.precio }}</span>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <span class="badge bg-secondary"><i class="fas fa-clock me-1"></i>{{ producto.tiempo_preparacion }} min de preparación</span>
+        </div>
+        
+        {% if producto.alergenos %}
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Alérgenos:</strong> {{ producto.alergenos }}
+        </div>
+        {% endif %}
+        
+        <!-- Agregar al carrito -->
+        <form method="post" action="{% url 'agregar_carrito' producto.id %}" class="mt-4">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-4">
+                    <label class="form-label">Cantidad</label>
+                    <input type="number" name="cantidad" value="1" min="1" class="form-control">
+                </div>
+                <div class="col-md-8 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-cart-plus me-2"></i>Agregar al Carrito
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

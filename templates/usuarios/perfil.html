@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Mi Perfil - Restaurante Sabor Colombiano{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1><i class="fas fa-user me-2"></i>Mi Perfil</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="fas fa-user-circle fa-5x mb-3" style="color: var(--pastel-coral);"></i>
+                <h4>{{ user.get_full_name|default:user.username }}</h4>
+                <p class="text-muted">{{ user.email }}</p>
+                
+                <hr>
+                
+                <div class="mb-3">
+                    <span class="badge bg-warning text-dark fs-6">
+                        <i class="fas fa-crown me-1"></i>Nivel {{ perfil.nivel_fidelidad }}
+                    </span>
+                </div>
+                
+                <div class="mb-3">
+                    <span class="puntos-badge">
+                        <i class="fas fa-coins me-1"></i>{{ perfil.puntos_fidelidad }} puntos
+                    </span>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <a href="{% url 'mis_pedidos' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-shopping-bag me-2"></i>Mis Pedidos
+                    </a>
+                    <a href="{% url 'mis_beneficios' %}" class="btn btn-outline-warning">
+                        <i class="fas fa-gift me-2"></i>Mis Beneficios
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Información Personal</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Apellido</label>
+                            <input type="text" name="last_name" class="form-control" value="{{ user.last_name }}">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Correo electrónico</label>
+                        <input type="email" name="email" class="form-control" value="{{ user.email }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Teléfono</label>
+                        <input type="text" name="telefono" class="form-control" value="{{ perfil.telefono }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Dirección</label>
+                        <textarea name="direccion" class="form-control" rows="2">{{ perfil.direccion }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Número de documento</label>
+                        <input type="text" name="numero_documento" class="form-control" value="{{ perfil.numero_documento }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Guardar Cambios
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">Estadísticas</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-4">
+                        <h3 class="text-primary">{{ perfil.total_pedidos }}</h3>
+                        <p class="text-muted">Pedidos</p>
+                    </div>
+                    <div class="col-4">
+                        <h3 class="text-warning">${{ perfil.gasto_total }}</h3>
+                        <p class="text-muted">Total Gastado</p>
+                    </div>
+                    <div class="col-4">
+                        <h3 class="text-success">{{ perfil.puntos_fidelidad }}</h3>
+                        <p class="text-muted">Puntos</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Menú del Día - Restaurante Sabor Colombiano{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1><i class="fas fa-calendar-day me-2"></i>Menú del Día</h1>
+        <p class="text-muted">{{ fecha|date:"d F Y" }}</p>
+    </div>
+</div>
+
+{% if menu %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card border-warning">
+            <div class="card-header bg-warning text-dark">
+                <h3 class="mb-0 text-center"><i class="fas fa-star me-2"></i>Menú Especial del Día</h3>
+            </div>
+            <div class="card-body text-center">
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <i class="fas fa-carrot fa-2x text-success mb-3"></i>
+                                <h5>Entrada</h5>
+                                <p class="mb-0">{{ menu.entrada.nombre }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 border-primary">
+                            <div class="card-body">
+                                <i class="fas fa-utensils fa-2x text-primary mb-3"></i>
+                                <h5>Plato Principal</h5>
+                                <p class="mb-0">{{ menu.plato_principal.nombre }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <i class="fas fa-glass-cheers fa-2x text-info mb-3"></i>
+                                <h5>Bebida</h5>
+                                <p class="mb-0">{{ menu.bebida.nombre }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if menu.postre %}
+                <div class="mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <i class="fas fa-birthday-cake fa-2x text-danger mb-3"></i>
+                            <h5>Postre</h5>
+                            <p class="mb-0">{{ menu.postre.nombre }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="alert alert-success">
+                    <h3 class="mb-0">Precio Especial: ${{ menu.precio_especial }}</h3>
+                </div>
+                
+                {% if menu.notas %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>{{ menu.notas }}
+                </div>
+                {% endif %}
+                
+                <form method="post" action="{% url 'agregar_menu_dia' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="menu_id" value="{{ menu.id }}">
+                    <input type="hidden" name="entrada_id" value="{{ menu.entrada.id }}">
+                    <input type="hidden" name="plato_id" value="{{ menu.plato_principal.id }}">
+                    <input type="hidden" name="bebida_id" value="{{ menu.bebida.id }}">
+                    {% if menu.postre %}
+                    <input type="hidden" name="postre_id" value="{{ menu.postre.id }}">
+                    {% endif %}
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-cart-plus me-2"></i>Ordenar Menú del Día
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="row">
+    <div class="col-12 text-center py-5">
+        <i class="fas fa-calendar-day fa-5x text-muted mb-4"></i>
+        <h3>No hay menú del día disponible</h3>
+        <p class="text-muted">Vuelve mañana para ver el menú especial</p>
+        <a href="{% url 'carta' %}" class="btn btn-primary">
+            <i class="fas fa-book-open me-2"></i>Ver Carta Completa
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

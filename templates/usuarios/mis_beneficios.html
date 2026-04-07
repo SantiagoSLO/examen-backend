@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}Mis Beneficios - Restaurante Sabor Colombiano{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1><i class="fas fa-gift me-2"></i>Mis Beneficios</h1>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="fas fa-user-circle fa-5x mb-3" style="color: var(--pastel-coral);"></i>
+                <h4>{{ user.get_full_name|default:user.username }}</h4>
+                
+                <hr>
+                
+                <div class="mb-3">
+                    <span class="badge bg-warning text-dark fs-6">
+                        <i class="fas fa-crown me-1"></i>Nivel {{ perfil.nivel_fidelidad }}
+                    </span>
+                </div>
+                
+                <div class="mb-3">
+                    <span class="puntos-badge">
+                        <i class="fas fa-coins me-1"></i>{{ perfil.puntos_fidelidad }} puntos
+                    </span>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <a href="{% url 'perfil' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-user me-2"></i>Mi Perfil
+                    </a>
+                    <a href="{% url 'mis_pedidos' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-shopping-bag me-2"></i>Mis Pedidos
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Beneficios Disponibles</h5>
+            </div>
+            <div class="card-body">
+                {% if beneficios %}
+                    <div class="row">
+                        {% for beneficio in beneficios %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100 border-{% if beneficio.tipo == 'D' %}success{% elif beneficio.tipo == 'P' %}warning{% else %}info{% endif %}">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        {% if beneficio.tipo == 'D' %}
+                                        <i class="fas fa-percent text-success"></i>
+                                        {% elif beneficio.tipo == 'P' %}
+                                        <i class="fas fa-gift text-warning"></i>
+                                        {% else %}
+                                        <i class="fas fa-star text-info"></i>
+                                        {% endif %}
+                                        {{ beneficio.nombre }}
+                                    </h5>
+                                    <p class="card-text">{{ beneficio.descripcion }}</p>
+                                    {% if beneficio.tipo == 'D' %}
+                                    <span class="badge bg-success">{{ beneficio.porcentaje }}% de descuento</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-gift fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No tienes beneficios activos aún.</p>
+                        <p>¡Haz más pedidos para desbloquear beneficios!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">Información de Nivel</h5>
+            </div>
+            <div class="card-body">
+                <p>Tu nivel actual es: <strong>Nivel {{ perfil.nivel_fidelidad }}</strong></p>
+                <div class="progress mb-3" style="height: 25px;">
+                    <div class="progress-bar bg-warning" role="progressbar" style="width: {{ perfil.nivel_fidelidad }}0%">
+                        {{ perfil.nivel_fidelidad }}0%
+                    </div>
+                </div>
+                <p class="text-muted">
+                    <small>¡Continúa pedidos para llegar al siguiente nivel y obtener más beneficios!</small>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

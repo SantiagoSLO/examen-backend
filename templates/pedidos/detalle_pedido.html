@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}Pedido #{{ pedido.numero_pedido }} - Restaurante Sabor Colombiano{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1><i class="fas fa-receipt me-2"></i>Pedido #{{ pedido.numero_pedido }}</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Detalles del Pedido</h5>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Precio</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in pedido.items.all %}
+                        <tr>
+                            <td>{{ item.producto.nombre }}</td>
+                            <td>{{ item.cantidad }}</td>
+                            <td>${{ item.precio_unitario }}</td>
+                            <td>${{ item.subtotal }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Información de entrega -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Información de Entrega</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Tipo de pedido:</strong> 
+                    {% if pedido.tipo_pedido == 'S' %}
+                    <span class="badge bg-primary">En el Restaurante</span>
+                    {% else %}
+                    <span class="badge bg-info">Domicilio</span>
+                    {% endif %}
+                </p>
+                <p><strong>Método de pago:</strong> {{ pedido.get_metodo_pago_display }}</p>
+                {% if pedido.direccion_entrega %}
+                <p><strong>Dirección de entrega:</strong> {{ pedido.direccion_entrega }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Resumen</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Subtotal:</span>
+                    <span>${{ pedido.subtotal }}</span>
+                </div>
+                {% if pedido.descuento > 0 %}
+                <div class="d-flex justify-content-between mb-2 text-success">
+                    <span>Descuento:</span>
+                    <span>-${{ pedido.descuento }}</span>
+                </div>
+                {% endif %}
+                {% if pedido.descuento_puntos > 0 %}
+                <div class="d-flex justify-content-between mb-2 text-success">
+                    <span>Descuento por Puntos ({{ pedido.puntos_canjeados }} puntos):</span>
+                    <span>-${{ pedido.descuento_puntos }}</span>
+                </div>
+                {% endif %}
+                {% if pedido.costo_domicilio > 0 %}
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Costo de domicilio:</span>
+                    <span>${{ pedido.costo_domicilio }}</span>
+                </div>
+                {% endif %}
+                <hr>
+                <div class="d-flex justify-content-between mb-3">
+                    <strong>Total:</strong>
+                    <strong class="text-primary">${{ pedido.total }}</strong>
+                </div>
+                
+                <div class="alert alert-success">
+                    <i class="fas fa-coins me-2"></i>
+                    <strong>Puntos ganados:</strong> {{ pedido.puntos_ganados }}
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'factura_pdf' pedido.id %}" class="btn btn-primary w-100">
+                    <i class="fas fa-file-pdf me-2"></i>Descargar Factura PDF
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <a href="{% url 'historial_pedidos' %}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-2"></i>Volver a Mis Pedidos
+        </a>
+    </div>
+</div>
+{% endblock %}
