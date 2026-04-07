@@ -19,6 +19,16 @@ Backend API for the restaurant application built with Django and Django REST Fra
 
 Deployed on Render.
 
+## Seed data on Render
+
+If the backend starts with an empty database, use this command in Render:
+
+```bash
+python manage.py migrate && python manage.py cargar_carta && gunicorn restaurante.wsgi:application --bind 0.0.0.0:$PORT
+```
+
+This will create the restaurant menu data before the server starts.
+
 ## Setup
 
 1. Clone the repo
