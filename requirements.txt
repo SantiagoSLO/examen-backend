@@ -6,3 +6,4 @@ packaging==26.0
 uvicorn==0.42.0
 Django==6.0.3
 djangorestframework==3.17.1
+django-cors-headers==4.9.0
