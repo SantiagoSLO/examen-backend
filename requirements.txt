@@ -7,3 +7,5 @@ uvicorn==0.42.0
 Django==6.0.3
 djangorestframework==3.17.1
 django-cors-headers==4.9.0
+django-crispy-forms==2.0.0
+crispy-bootstrap4==2023.1
